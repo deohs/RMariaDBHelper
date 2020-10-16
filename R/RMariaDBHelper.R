@@ -155,7 +155,7 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE,
     pk_str <- ifelse(pk == TRUE, 'PRIMARY KEY', '')
     query <- paste("ALTER TABLE", tablename,
                    "ADD", fieldname, "INT UNSIGNED NOT NULL AUTO_INCREMENT",
-                   pk_str, ", ADD INDEX (", fieldname, ");")
+                   pk_str, ", ADD UNIQUE INDEX (", fieldname, ");")
     db_run_query(query, conf_file = conf_file)
 }
 
