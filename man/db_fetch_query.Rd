@@ -20,7 +20,7 @@ Run a database query that returns a dataframe.
 }
 \section{Details}{
 
-A SQL statement will be run and the number of affected rows will be returned.
+A SQL statement will be run and a dataframe of results will be returned.
 }
 
 \examples{

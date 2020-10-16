@@ -161,7 +161,7 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE,
 #' @return (dataframe) The query result returned as a dataframe.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' A SQL statement will be run and the number of affected rows will be returned.
+#' A SQL statement will be run and a dataframe of results will be returned.
 #' @examples
 #' \dontrun{
 #' db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
