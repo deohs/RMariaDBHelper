@@ -126,7 +126,9 @@ db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' Add an id Field
 #'
 #' Add an auto-number integer "id" field to a table.
-#' @param tablename (character) A table name to use for the new table.
+#' @param tablename (character) The table name that will get the new "id" field.
+#' @param fieldname (character) The field name to use for the new "id" field.
+#'     (Default: "id")
 #' @param pk (boolean) Add "id" as a primary key (TRUE) or not (FALSE).
 #'     (Default: TRUE)
 #' @param conf_file (character) Configuration file to read/write.
@@ -134,18 +136,19 @@ db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' @return (boolean) Success: TRUE; failure: FALSE.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' An auto-incrementing integer "id" field will be added to a table, set as an
-#' index, and optionally set as a primary key.
+#' An auto-incrementing, non-null, non-negative integer "id" field will be
+#' added to a table, set as an index, and optionally set as a primary key.
 #' @examples
 #' \dontrun{
 #' db_add_auto_id("iris")
 #' }
 #' @export
-db_add_auto_id <- function(tablename, pk = TRUE, conf_file = "~/.db_conf.yml") {
+db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE,
+                           conf_file = "~/.db_conf.yml") {
     pk_str <- ifelse(pk == TRUE, 'PRIMARY KEY', '')
     query <- paste("ALTER TABLE", tablename,
-                   "ADD id INT UNSIGNED NOT NULL AUTO_INCREMENT", pk_str, ",",
-                   "ADD INDEX (id);")
+                   "ADD", fieldname, "INT UNSIGNED NOT NULL AUTO_INCREMENT",
+                   pk_str, ", ADD INDEX (", fieldname, ");")
     db_run_query(query, conf_file = conf_file)
 }
 
