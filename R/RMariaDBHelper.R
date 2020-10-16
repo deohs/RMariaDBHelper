@@ -190,7 +190,7 @@ db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
     }
 }
 
-#' List tables in a database.
+#' List Tables in a Database.
 #'
 #' Run a database query that lists the tables in a database.
 #' @param conf_file (character) A file containing database connection parameters.
@@ -206,6 +206,30 @@ db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' @export
 db_ls <- function(conf_file = "~/.db_conf.yml") {
     as.character(db_fetch_query("SHOW TABLES;", conf_file = conf_file)[[1]])
+}
+
+#' Show Length and Size of Tables.
+#'
+#' Run a database query that lists the length and size of database tables.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (dataframe) The sizes of the tables in a database.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A SQL query will return the length and sizes of the tables in the database.
+#' @examples
+#' \dontrun{
+#' db_ls()
+#' }
+#' @export
+db_len <- function(conf_file = "~/.db_conf.yml") {
+  if (!exists("db_conf")) db_read_conf(conf_file = conf_file)
+  query <- paste0(
+      'SELECT TABLE_NAME, TABLE_ROWS, DATA_LENGTH, INDEX_LENGTH,
+      round(((DATA_LENGTH + INDEX_LENGTH) / 1024 / 1024),2) "Size in MB"
+      FROM information_schema.TABLES WHERE TABLE_SCHEMA = "', db_conf$dbname,
+      '" ORDER BY (DATA_LENGTH + INDEX_LENGTH) DESC;')
+  db_fetch_query(query, conf_file = conf_file)
 }
 
 #' Show structure of a table.
@@ -286,9 +310,8 @@ db_ncol <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_nrow <- function(tablename, conf_file = "~/.db_conf.yml") {
-    tablename <- paste0('`', gsub('`', '', tablename), '`')
-    query <- paste("SELECT COUNT(*) AS rows FROM", tablename)
-    as.integer(db_fetch_query(query, conf_file = conf_file)[[1]])
+    sizes <- db_len()
+    as.integer(sizes[sizes$TABLE_NAME == tablename, "TABLE_ROWS"])
 }
 
 #' Show dimensions of a table.

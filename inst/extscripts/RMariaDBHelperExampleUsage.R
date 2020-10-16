@@ -32,6 +32,9 @@ db_add_auto_id("arrests")
 # Show a list of tables in a database.
 db_ls()
 
+# Show length and size of all tables in a database.
+db_len()
+
 # Show columns of a table.
 db_str("arrests")
 
