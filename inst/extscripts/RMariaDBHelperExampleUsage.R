@@ -32,6 +32,9 @@ db_add_auto_id("arrests")
 # Get list of tables.
 db_fetch_query("SHOW TABLES;")
 
+# Show columns of a table.
+db_fetch_query("SHOW COLUMNS FROM arrests;")
+
 # Show indexes of a table.
 db_fetch_query("SHOW INDEX FROM arrests;")
 
