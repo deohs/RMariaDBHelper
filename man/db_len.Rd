@@ -11,14 +11,15 @@ db_len(conf_file = "~/.db_conf.yml")
 (Default: "~/.db_conf.yml")}
 }
 \value{
-(dataframe) The sizes of the tables in a database.
+(dataframe) The length and size of each tables in a database.
 }
 \description{
 Run a database query that lists the length and size of database tables.
 }
 \section{Details}{
 
-A SQL query will return the length and sizes of the tables in the database.
+A SQL query performed on information_schema.TABLES will return the length
+and size of each table in the database and return the result as a dataframe.
 }
 
 \examples{

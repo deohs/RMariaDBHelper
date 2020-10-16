@@ -213,10 +213,11 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' Run a database query that lists the length and size of database tables.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
-#' @return (dataframe) The sizes of the tables in a database.
+#' @return (dataframe) The length and size of each tables in a database.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' A SQL query will return the length and sizes of the tables in the database.
+#' A SQL query performed on information_schema.TABLES will return the length
+#' and size of each table in the database and return the result as a dataframe.
 #' @examples
 #' \dontrun{
 #' db_len()
