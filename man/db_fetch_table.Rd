@@ -23,7 +23,7 @@ Retrieve a database table as a dataframe.
 \section{Details}{
 
 A SQL query will return a table as a dataframe. Use 'n' to limit the number
-of rows returned.
+of rows returned, where n = -1 means all records.
 }
 
 \examples{

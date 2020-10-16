@@ -4,11 +4,14 @@
 \alias{db_connect}
 \title{Initialize Connection}
 \usage{
-db_connect(conf_file = "~/.db_conf.yml")
+db_connect(conf_file = "~/.db_conf.yml", enable_cleartext_plugin = TRUE)
 }
 \arguments{
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{enable_cleartext_plugin}{(boolean) Set the environment variable
+LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1. (Default: TRUE)}
 }
 \value{
 (DBIConnection) A DBIConnection for success; FALSE for failure.

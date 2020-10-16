@@ -66,6 +66,8 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
 #' Initialize a connection to the database and return a DBIConnection.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param enable_cleartext_plugin (boolean) Set the environment variable
+#' LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1. (Default: TRUE)
 #' @return (DBIConnection) A DBIConnection for success; FALSE for failure.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -75,13 +77,20 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
 #' channel <- db_connect()
 #' }
 #' @export
-db_connect <- function(conf_file = "~/.db_conf.yml") {
+db_connect <- function(conf_file = "~/.db_conf.yml",
+                       enable_cleartext_plugin = TRUE) {
     if (!exists("db_conf")) db_read_conf(conf_file)
 
     if(exists("db_conf")) {
         if (!"password" %in% names(db_conf)) {
             db_conf[['password']] <- getPass::getPass()
             db_conf <<- db_conf
+        }
+
+        if (enable_cleartext_plugin == TRUE) {
+            if (Sys.getenv('LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN') != "1") {
+              Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1)
+            }
         }
 
         if (db_conf[['username']] != '' & db_conf[['password']] != '') {
@@ -354,21 +363,15 @@ db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
 #' A SQL query will return a table as a dataframe. Use 'n' to limit the number
-#' of rows returned.
+#' of rows returned, where n = -1 means all records.
 #' @examples
 #' \dontrun{
 #' db_fetch_table("iris")
 #' }
 #' @export
 db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
-    channel <- db_connect(conf_file)
-    if (!isFALSE(channel)) {
-        res <- RMariaDB::dbSendQuery(channel, paste("SELECT * FROM", tablename))
-        df <- RMariaDB::dbFetch(res, n)
-        RMariaDB::dbClearResult(res)
-        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
-        df
-    }
+    db_fetch_query(paste('SELECT * FROM', tablename,
+                         ifelse(n > 0, paste("LIMIT", n), "")))
 }
 
 #' Remove a Table
