@@ -194,7 +194,7 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 
 #' Show structure of a table.
 #'
-#' Run a database query that returns a dataframe.
+#' Run a database query on a table that shows the columns and their properties.
 #' @param tablename (character) A table name to query for structure.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
@@ -210,6 +210,28 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 db_str <- function(tablename, conf_file = "~/.db_conf.yml") {
     query <- paste("SHOW COLUMNS FROM", tablename)
     db_fetch_query(query, conf_file = conf_file)
+}
+
+#' Show structure of all tables.
+#'
+#' Show the columns and their properties for all of the tables in a database.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (dataframe) The combined query results returned as a dataframe.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' Results from SHOW COLUMNS queries for all tables in a database will be
+#' combined into a single dataframe.
+#' @examples
+#' \dontrun{
+#' db_str_all()
+#' }
+#' @export
+db_str_all <- function(conf_file = "~/.db_conf.yml") {
+    do.call('rbind',
+            as.list(lapply(db_ls(conf_file = conf_file), function(x) {
+                cbind(db_str(x, conf_file = conf_file), Table = x)
+    })))
 }
 
 #' Count number of columns of a table.

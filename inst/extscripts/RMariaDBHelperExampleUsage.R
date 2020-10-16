@@ -35,6 +35,9 @@ db_ls()
 # Show columns of a table.
 db_str("arrests")
 
+# Show columns of all tables.
+db_str_all()
+
 # Show indexes of a table.
 db_fetch_query("SHOW INDEX FROM arrests;")
 

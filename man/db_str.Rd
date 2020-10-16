@@ -16,7 +16,7 @@ db_str(tablename, conf_file = "~/.db_conf.yml")
 (dataframe) The query result returned as a dataframe.
 }
 \description{
-Run a database query that returns a dataframe.
+Run a database query on a table that shows the columns and their properties.
 }
 \section{Details}{
 
