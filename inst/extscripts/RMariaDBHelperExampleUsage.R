@@ -29,17 +29,23 @@ db_send_table(df, "arrests")
 # This is not required but will help with some queries (below) and performance.
 db_add_auto_id("arrests")
 
-# Get list of tables.
-db_fetch_query("SHOW TABLES;")
+# Show a list of tables in a database.
+db_ls()
 
 # Show columns of a table.
-db_fetch_query("SHOW COLUMNS FROM arrests;")
+db_str("arrests")
 
 # Show indexes of a table.
 db_fetch_query("SHOW INDEX FROM arrests;")
 
-# Show number of rows of a table.
-db_fetch_query("SELECT COUNT(*) as N FROM arrests;")
+# Show number of rows in a table.
+db_nrow("arrests")
+
+# Show number of columns in a table.
+db_ncol("arrests")
+
+# Show dimensions of a table.
+db_dim("arrests")
 
 # Append to a table.
 db_append_table(df, "arrests")
@@ -56,7 +62,7 @@ db_fetch_table("arrests", 6)
 db_fetch_query("SELECT * FROM arrests ORDER BY id DESC LIMIT 6;")
 
 # Remove a table.
-db_remove_table("arrests")
+db_rm("arrests")
 
 # Clear the database configuration from memory when finished, for security.
 rm(list = "db_conf")

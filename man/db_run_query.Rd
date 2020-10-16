@@ -9,7 +9,7 @@ db_run_query(query, conf_file = "~/.db_conf.yml")
 \arguments{
 \item{query}{(character) A SQL statement as a text string.}
 
-\item{conf_file}{(character) Configuration file to read/write.
+\item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
 }
 \value{

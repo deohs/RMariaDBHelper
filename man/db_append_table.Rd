@@ -11,7 +11,7 @@ db_append_table(df, tablename, conf_file = "~/.db_conf.yml")
 
 \item{tablename}{(character) A table name to receive additional records.}
 
-\item{conf_file}{(character) Configuration file to read/write.
+\item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
 }
 \value{

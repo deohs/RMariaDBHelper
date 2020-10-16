@@ -11,7 +11,7 @@ db_fetch_table(tablename, n = -1, conf_file = "~/.db_conf.yml")
 
 \item{n}{(integer) The number of rows to return. (Default -1 means all rows.)}
 
-\item{conf_file}{(character) Configuration file to read/write.
+\item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
 }
 \value{
@@ -22,7 +22,8 @@ Retrieve a database table as a dataframe.
 }
 \section{Details}{
 
-A dataframe will be sent to the database to be appended to an existing table.
+A SQL query will return a table as a dataframe. Use 'n' to limit the number
+of rows returned.
 }
 
 \examples{

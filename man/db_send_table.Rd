@@ -2,7 +2,7 @@
 % Please edit documentation in R/RMariaDBHelper.R
 \name{db_send_table}
 \alias{db_send_table}
-\title{Send a Dataframe to a Table}
+\title{Save a Dataframe as a Table}
 \usage{
 db_send_table(df, tablename, conf_file = "~/.db_conf.yml")
 }
@@ -11,7 +11,7 @@ db_send_table(df, tablename, conf_file = "~/.db_conf.yml")
 
 \item{tablename}{(character) A table name to use for the new table.}
 
-\item{conf_file}{(character) Configuration file to read/write.
+\item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
 }
 \value{
