@@ -19,28 +19,28 @@
 #' @examples
 #' \dontrun{
 #' # First, run once to create the file with the values provided:
-#' read_conf(conf_file = "~/.db_conf.yml",
-#'           username = "my_username",
-#'           host = "db.server.example.com",
-#'           dbname = "my_dbname",
-#'           sslmode = "REQUIRED",
-#'           sslca = "/etc/db-ssl/ca-cert.pem",
-#'           sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-#'           sslcert = "/etc/db-ssl/client-cert.pem")
+#' db_read_conf(conf_file = "~/.db_conf.yml",
+#'              username = "my_username",
+#'              host = "db.server.example.com",
+#'              dbname = "my_dbname",
+#'              sslmode = "REQUIRED",
+#'              sslca = "/etc/db-ssl/ca-cert.pem",
+#'              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
+#'              sslcert = "/etc/db-ssl/client-cert.pem")
 #' # You will see warnings about the file not existing and/or needs editing.
 #'
 #' # Subsequently, read the file once per session:
-#' db_conf <- read_conf()
+#' db_conf <- db_read_conf()
 #' }
 #' @export
-read_conf <- function(conf_file = "~/.db_conf.yml",
-                      username = '',
-                      host = '',
-                      dbname = '',
-                      sslmode = '',
-                      sslca = '',
-                      sslkey = '',
-                      sslcert = '') {
+db_read_conf <- function(conf_file = "~/.db_conf.yml",
+                        username = '',
+                        host = '',
+                        dbname = '',
+                        sslmode = '',
+                        sslca = '',
+                        sslkey = '',
+                        sslcert = '') {
     if(!exists("db_conf")) {
         if (file.exists(conf_file)) {
             db_conf <<- yaml::read_yaml(file = conf_file)
@@ -74,11 +74,11 @@ read_conf <- function(conf_file = "~/.db_conf.yml",
 #' A configuration file will be read and used to connect to the database.
 #' @examples
 #' \dontrun{
-#' channel <- connect_to_db()
+#' channel <- db_connect()
 #' }
 #' @export
-connect_to_db <- function(conf_file = "~/.db_conf.yml") {
-    if (!exists("db_conf")) read_conf(conf_file)
+db_connect <- function(conf_file = "~/.db_conf.yml") {
+    if (!exists("db_conf")) db_read_conf(conf_file)
 
     if(exists("db_conf")) {
         if (!"password" %in% names(db_conf) & Sys.getenv("RSTUDIO") == "1") {
@@ -115,7 +115,7 @@ connect_to_db <- function(conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file)
+    channel <- db_connect(conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbExecute(channel, query)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -139,7 +139,7 @@ db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file)
+    channel <- db_connect(conf_file)
     if (!isFALSE(channel)) {
         res_db <- RMariaDB::dbGetQuery(channel, query)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -164,7 +164,7 @@ db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file)
+    channel <- db_connect(conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbWriteTable(channel, tablename, df)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -189,7 +189,7 @@ db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file)
+    channel <- db_connect(conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbAppendTable(channel, tablename, df)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -214,7 +214,7 @@ db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file)
+    channel <- db_connect(conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbSendQuery(channel, paste("SELECT * FROM", tablename))
         df <- RMariaDB::dbFetch(res, n)
@@ -240,7 +240,7 @@ db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_remove_table <- function(tablename, conf_file = "~/.db_conf.yml") {
-    channel <- connect_to_db(conf_file = conf_file)
+    channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbRemoveTable(channel, tablename)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))

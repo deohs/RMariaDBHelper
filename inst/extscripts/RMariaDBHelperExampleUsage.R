@@ -8,14 +8,14 @@
 library(RMariaDBHelper)
 
 # Set up configuration file for first use, if not already present.
-read_conf(conf_file = "~/.db_conf.yml",
-          username = "my_username",
-          host = "db.server.example.com",
-          dbname = "my_dbname",
-          sslmode = "REQUIRED",
-          sslca = "/etc/db-ssl/ca-cert.pem",
-          sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-          sslcert = "/etc/db-ssl/client-cert.pem")
+db_read_conf(conf_file = "~/.db_conf.yml",
+             username = "my_username",
+             host = "db.server.example.com",
+             dbname = "my_dbname",
+             sslmode = "REQUIRED",
+             sslca = "/etc/db-ssl/ca-cert.pem",
+             sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
+             sslcert = "/etc/db-ssl/client-cert.pem")
 
 # Prepare a dataset for sending to the database. Store rownames as a column.
 df <- datasets::USArrests

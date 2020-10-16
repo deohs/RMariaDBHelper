@@ -25,4 +25,7 @@ pacman::p_load_gh("deohs/RMariaDBHelper")
 See [RMariaDBHelperExampleUsage.R](inst/extscripts/RMariaDBHelperExampleUsage.R) 
 or the online documentation for this package as found in the R help browser.
 
-Note: This package is to be used with a MariaDB database configured previously.
+## Notes
+
+- This package is to be used with a MariaDB database configured previously.
+- For a more mature and feature-rich package, see [databaser](https://github.com/skgrange/databaser).
