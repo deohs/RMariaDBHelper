@@ -32,7 +32,7 @@ db_add_auto_id("arrests")
 # Get list of tables.
 db_fetch_query("SHOW TABLES;")
 
-# Show indexes of "arrests".
+# Show indexes of a table.
 db_fetch_query("SHOW INDEX FROM arrests;")
 
 # Show number of rows of a table.
