@@ -219,7 +219,7 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' A SQL query will return the length and sizes of the tables in the database.
 #' @examples
 #' \dontrun{
-#' db_ls()
+#' db_len()
 #' }
 #' @export
 db_len <- function(conf_file = "~/.db_conf.yml") {

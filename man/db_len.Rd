@@ -23,7 +23,7 @@ A SQL query will return the length and sizes of the tables in the database.
 
 \examples{
 \dontrun{
-db_ls()
+db_len()
 }
 }
 \keyword{MariaDB,}
