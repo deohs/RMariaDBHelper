@@ -34,32 +34,30 @@
 #' }
 #' @export
 db_read_conf <- function(conf_file = "~/.db_conf.yml",
-                        username = '',
-                        host = '',
-                        dbname = '',
-                        sslmode = '',
-                        sslca = '',
-                        sslkey = '',
-                        sslcert = '') {
-    if(!exists("db_conf")) {
-        if (file.exists(conf_file)) {
-            db_conf <<- yaml::read_yaml(file = conf_file)
-            return(exists("db_conf") & is.list(db_conf))
-        } else {
-            db_conf <-
-                list(
-                    username = username,
-                    host = host,
-                    dbname = dbname,
-                    sslmode = sslmode,
-                    sslca = sslca,
-                    sslkey = sslkey,
-                    sslcert = sslcert
-                )
-            try(yaml::write_yaml(db_conf, file = conf_file))
-            warning(paste("Edit", conf_file, "for correct database settings."))
-            return(FALSE)
-        }
+                         username = '',
+                         host = '',
+                         dbname = '',
+                         sslmode = '',
+                         sslca = '',
+                         sslkey = '',
+                         sslcert = '') {
+    if (file.exists(conf_file)) {
+        db_conf <<- yaml::read_yaml(file = conf_file)
+        return(exists("db_conf") & is.list(db_conf) & length(db_conf) > 0)
+    } else {
+        db_conf <-
+            list(
+                username = username,
+                host = host,
+                dbname = dbname,
+                sslmode = sslmode,
+                sslca = sslca,
+                sslkey = sslkey,
+                sslcert = sslcert
+            )
+        try(yaml::write_yaml(db_conf, file = conf_file))
+        warning(paste("Edit", conf_file, "for correct database settings."))
+        return(FALSE)
     }
 }
 
