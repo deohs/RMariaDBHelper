@@ -27,13 +27,13 @@ db_send_table(df, "arrests")
 
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.
-query <- paste("ALTER TABLE", "arrests",
-               "ADD id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,",
-               "ADD INDEX (id);")
-db_run_query(query)
+db_add_auto_id("arrests")
 
 # Get list of tables.
 db_fetch_query("SHOW TABLES;")
+
+# Show indexes of "arrests".
+db_fetch_query("SHOW INDEX FROM arrests;")
 
 # Show number of rows of a table.
 db_fetch_query("SELECT COUNT(*) as N FROM arrests;")
