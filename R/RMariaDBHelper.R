@@ -136,7 +136,9 @@ db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' @param tablename (character) The table name that will get the new "id" field.
 #' @param fieldname (character) The field name to use for the new "id" field.
 #'     (Default: "id")
-#' @param pk (boolean) Add "id" as a primary key (TRUE) or not (FALSE).
+#' @param pk (boolean) Add "id" as a PRIMARY KEY (TRUE) or not (FALSE).
+#'     (Default: TRUE)
+#' @param uniq (boolean) Add "id" as a UNIQUE primary key (TRUE) or not (FALSE).
 #'     (Default: TRUE)
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
@@ -150,12 +152,17 @@ db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
 #' db_add_auto_id("iris")
 #' }
 #' @export
-db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE,
+db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE, uniq = TRUE,
                            conf_file = "~/.db_conf.yml") {
     pk_str <- ifelse(pk == TRUE, 'PRIMARY KEY', '')
+    uniq_str <- ifelse(uniq == TRUE, 'UNIQUE', '')
+    tablename <- paste0('`', gsub('`', '', tablename), '`')
+    index_name <- paste0('`ndx_', gsub('`', '', fieldname), '`')
+    fieldname <- paste0('`', gsub('`', '', fieldname), '`')
     query <- paste("ALTER TABLE", tablename,
                    "ADD", fieldname, "INT UNSIGNED NOT NULL AUTO_INCREMENT",
-                   pk_str, ", ADD UNIQUE INDEX (", fieldname, ");")
+                   pk_str, ", ADD", uniq_str, "INDEX", index_name, "(",
+                   fieldname, ");")
     db_run_query(query, conf_file = conf_file)
 }
 
@@ -217,6 +224,7 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_str <- function(tablename, conf_file = "~/.db_conf.yml") {
+    tablename <- paste0('`', gsub('`', '', tablename), '`')
     query <- paste("SHOW COLUMNS FROM", tablename)
     db_fetch_query(query, conf_file = conf_file)
 }
@@ -278,7 +286,8 @@ db_ncol <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_nrow <- function(tablename, conf_file = "~/.db_conf.yml") {
-    query <- paste("SELECT COUNT(*) as rows FROM", tablename)
+    tablename <- paste0('`', gsub('`', '', tablename), '`')
+    query <- paste("SELECT COUNT(*) AS rows FROM", tablename)
     as.integer(db_fetch_query(query, conf_file = conf_file)[[1]])
 }
 
@@ -370,8 +379,9 @@ db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
+    tablename <- paste0('`', gsub('`', '', tablename), '`')
     db_fetch_query(paste('SELECT * FROM', tablename,
-                         ifelse(n > 0, paste("LIMIT", n), "")))
+                         ifelse(n > 0, paste("LIMIT", as.integer(n)), "")))
 }
 
 #' Remove a Table

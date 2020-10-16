@@ -8,6 +8,7 @@ db_add_auto_id(
   tablename,
   fieldname = "id",
   pk = TRUE,
+  uniq = TRUE,
   conf_file = "~/.db_conf.yml"
 )
 }
@@ -17,7 +18,10 @@ db_add_auto_id(
 \item{fieldname}{(character) The field name to use for the new "id" field.
 (Default: "id")}
 
-\item{pk}{(boolean) Add "id" as a primary key (TRUE) or not (FALSE).
+\item{pk}{(boolean) Add "id" as a PRIMARY KEY (TRUE) or not (FALSE).
+(Default: TRUE)}
+
+\item{uniq}{(boolean) Add "id" as a UNIQUE primary key (TRUE) or not (FALSE).
 (Default: TRUE)}
 
 \item{conf_file}{(character) A file containing database connection parameters.
