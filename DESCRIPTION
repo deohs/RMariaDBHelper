@@ -16,7 +16,6 @@ LazyData: true
 Imports:
     getPass (>= 0.2-2),
     RMariaDB (>= 1.0.10),
-    rstudioapi (>= 0.11),
     yaml (>= 2.2.1)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
