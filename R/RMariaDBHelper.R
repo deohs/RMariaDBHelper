@@ -1,0 +1,249 @@
+#' Read Configuration
+#'
+#' Read database configuration file.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @param username (character) Username. See: RMariaDB::MariaDB. (Default: "")
+#' @param host (character) Database erver hostname. See: RMariaDB::MariaDB.
+#'     (Default: "")
+#' @param dbname (character) Database name. See: RMariaDB::MariaDB. (Default: "")
+#' @param sslmode (character) SSL mode. See: RMariaDB::MariaDB. (Default: "")
+#' @param sslca (character) CCL CA path. See: RMariaDB::MariaDB. (Default: "")
+#' @param sslkey (character) SSL key path. See: RMariaDB::MariaDB. (Default: "")
+#' @param sslcert (character) SSL certificate path. See: RMariaDB::MariaDB.
+#'     (Default: "")
+#' @return (boolean) TRUE for success; FALSE for failure.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A configuration file will be read if found, otherwise one will be created.
+#' @examples
+#' \dontrun{
+#' # First, run once to create the file with the values provided:
+#' read_conf(conf_file = "~/.db_conf.yml",
+#'           username = "my_username",
+#'           host = "db.server.example.com",
+#'           dbname = "my_dbname",
+#'           sslmode = "REQUIRED",
+#'           sslca = "/etc/db-ssl/ca-cert.pem",
+#'           sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
+#'           sslcert = "/etc/db-ssl/client-cert.pem")
+#' # You will see warnings about the file not existing and/or needs editing.
+#'
+#' # Subsequently, read the file once per session:
+#' db_conf <- read_conf()
+#' }
+#' @export
+read_conf <- function(conf_file = "~/.db_conf.yml",
+                      username = '',
+                      host = '',
+                      dbname = '',
+                      sslmode = '',
+                      sslca = '',
+                      sslkey = '',
+                      sslcert = '') {
+    if(!exists("db_conf")) {
+        if (file.exists(conf_file)) {
+            db_conf <<- yaml::read_yaml(file = conf_file)
+            return(exists("db_conf") & is.list(db_conf))
+        } else {
+            db_conf <-
+                list(
+                    username = username,
+                    host = host,
+                    dbname = dbname,
+                    sslmode = sslmode,
+                    sslca = sslca,
+                    sslkey = sslkey,
+                    sslcert = sslcert
+                )
+            try(yaml::write_yaml(db_conf, file = conf_file))
+            warning(paste("Edit", conf_file, "for correct database settings."))
+            return(FALSE)
+        }
+    }
+}
+
+#' Initialize Connection
+#'
+#' Initialize a connection to the database and return a DBIConnection.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (DBIConnection) A DBIConnection for success; FALSE for failure.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A configuration file will be read and used to connect to the database.
+#' @examples
+#' \dontrun{
+#' channel <- connect_to_db()
+#' }
+#' @export
+connect_to_db <- function(conf_file = "~/.db_conf.yml") {
+    if (!exists("db_conf")) read_conf(conf_file)
+
+    if(exists("db_conf")) {
+        if (!"password" %in% names(db_conf) & Sys.getenv("RSTUDIO") == "1") {
+            db_conf[['password']] <- rstudioapi::askForPassword("Password:")
+            db_conf <<- db_conf
+        }
+
+        if (db_conf[['username']] != '' & db_conf[['password']] != '') {
+            if (!"drv" %in% names(db_conf)) {
+                db_conf <- c(drv = RMariaDB::MariaDB(), db_conf)
+            }
+
+            do.call(RMariaDB::dbConnect, c(db_conf))
+        }
+    } else {
+        warning(paste("Can't read", conf_file))
+        return(FALSE)
+    }
+}
+
+#' Run a Query
+#'
+#' Run a database query that returns the number of affected rows.
+#' @param query (character) A SQL statement as a text string.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (integer) The number of affected rows.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A SQL statement will be run and the number of affected rows will be returned.
+#' @examples
+#' \dontrun{
+#' db_run_query("DELETE FROM my.tablename WHERE id = 1;")
+#' }
+#' @export
+db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file)
+    if (!isFALSE(channel)) {
+        res <- RMariaDB::dbExecute(channel, query)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        res
+    }
+}
+
+#' Fetch Results from a Query
+#'
+#' Run a database query that returns a dataframe.
+#' @param query (character) A SQL statement as a text string.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (dataframe) The query result returned as a dataframe.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A SQL statement will be run and the number of affected rows will be returned.
+#' @examples
+#' \dontrun{
+#' db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
+#' }
+#' @export
+db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file)
+    if (!isFALSE(channel)) {
+        res_db <- RMariaDB::dbGetQuery(channel, query)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        res_db
+    }
+}
+
+#' Send a Dataframe to a Table
+#'
+#' Send a dataframe to the database as a new table.
+#' @param df (dataframe) A dataframe to send to the database.
+#' @param tablename (character) A table name to use for the new table.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (boolean) Success: TRUE; failure: FALSE.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A dataframe will be sent to the database to be stored as a new table.
+#' @examples
+#' \dontrun{
+#' db_send_table(datasets::iris, "iris")
+#' }
+#' @export
+db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file)
+    if (!isFALSE(channel)) {
+        res <- RMariaDB::dbWriteTable(channel, tablename, df)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        res
+    }
+}
+
+#' Append a Dataframe to a Table
+#'
+#' Send a dataframe to the database to append to a table.
+#' @param df (dataframe) A dataframe to append to a database table.
+#' @param tablename (character) A table name to receive additional records.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (integer) Number of affected (appended) rows.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A dataframe will be sent to the database to be appended to an existing table.
+#' @examples
+#' \dontrun{
+#' db_append_table(datasets::iris, "iris")
+#' }
+#' @export
+db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file)
+    if (!isFALSE(channel)) {
+        res <- RMariaDB::dbAppendTable(channel, tablename, df)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        res
+    }
+}
+
+#' Fetch a Table
+#'
+#' Retrieve a database table as a dataframe.
+#' @param tablename (character) A table name to query for all records.
+#' @param n (integer) The number of rows to return. (Default -1 means all rows.)
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (dataframe) The query result returned as a dataframe.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A dataframe will be sent to the database to be appended to an existing table.
+#' @examples
+#' \dontrun{
+#' db_fetch_table("iris")
+#' }
+#' @export
+db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file)
+    if (!isFALSE(channel)) {
+        res <- RMariaDB::dbSendQuery(channel, paste("SELECT * FROM", tablename))
+        df <- RMariaDB::dbFetch(res, n)
+        RMariaDB::dbClearResult(res)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        df
+    }
+}
+
+#' Remove a Table
+#'
+#' Remove a table from a database.
+#' @param tablename (character) A table name to remove from the database.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @return (boolean) Success: TRUE; failure: FALSE.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A table will be removed from the database.
+#' @examples
+#' \dontrun{
+#' db_remove_table("iris")
+#' }
+#' @export
+db_remove_table <- function(tablename, conf_file = "~/.db_conf.yml") {
+    channel <- connect_to_db(conf_file = conf_file)
+    if (!isFALSE(channel)) {
+        res <- RMariaDB::dbRemoveTable(channel, tablename)
+        res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+        res
+    }
+}

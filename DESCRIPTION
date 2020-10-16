@@ -1,0 +1,21 @@
+Package: RMariaDBHelper
+Title: Helper functions to make RMariaDB easier to use
+Version: 0.0.1
+Authors@R: 
+    person(given = "Brian",
+           family = "High",
+           role = c("aut", "cre"),
+           email = "bhigh@live.com")
+URL: https://github.com/deohs/folders
+BugReports: https://github.com/deohs/folders/issues
+Description: Provides utility functions for use with RMariaDB.
+Depends: R (>= 3.6.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    RMariaDB (>= 1.0.10),
+    rstudioapi (>= 0.11),
+    yaml (>= 2.2.1)
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
