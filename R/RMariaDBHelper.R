@@ -79,8 +79,8 @@ db_connect <- function(conf_file = "~/.db_conf.yml") {
     if (!exists("db_conf")) db_read_conf(conf_file)
 
     if(exists("db_conf")) {
-        if (!"password" %in% names(db_conf) & Sys.getenv("RSTUDIO") == "1") {
-            db_conf[['password']] <- rstudioapi::askForPassword("Password:")
+        if (!"password" %in% names(db_conf)) {
+            db_conf[['password']] <- getPass::getPass()
             db_conf <<- db_conf
         }
 
