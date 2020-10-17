@@ -4,11 +4,17 @@
 
 # This script contains sample commands for testing RMariaDBHelper functions.
 
+# ---------------------------------------------------------------------------
 # Optional: Set "enable-cleartext-plugin" option. Some DB servers need this.
-# Note: For this to work, RMariaDBHelper and RMariaDB must not be loaded.
-if ("RMariaDBHelper" %in% (.packages())) detach(package:RMariaDBHelper)
-if ("RMariaDB" %in% (.packages())) detach(package:RMariaDB)
+# Note: If you enable this, be sure communications with the server are secure.
+# Note: To work, RMariaDBHelper, RMariaDB, and RMySQL must not be loaded.
+unload_pkg <- function(x)
+    if (x %in% (.packages()))
+        detach(paste0('package:', x), character.only = TRUE, unload = TRUE)
+res <- sapply(c('RMariaDBHelper', 'RMariaDB', 'RMySQL'), unload_pkg)
 Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1)
+# Alternatively, put "enable-cleartext-plugin" in your ~/.my.cnf file.
+# ---------------------------------------------------------------------------
 
 # Load RMariaDBHelper package.
 library(RMariaDBHelper)
@@ -68,14 +74,14 @@ db_append_table(df, "arrests")
 df.from.db <- db_fetch_table("arrests")
 str(df.from.db)
 
-# Retrieve first n rows of a table as a dataframe, as like head().
+# Retrieve first n rows of a table as a dataframe, like head().
 db_fetch_table("arrests", 6)
 
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.
 db_add_auto_id("arrests")
 
-# Retrieve last n rows of a table as a dataframe, as like tail().
+# Retrieve last n rows of a table as a dataframe, like tail().
 # Assumes "id" is stored in alphanumeric order, such as an auto-number key.
 db_fetch_query("SELECT * FROM arrests ORDER BY id DESC LIMIT 6;")
 
