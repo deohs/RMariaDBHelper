@@ -226,7 +226,7 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' names will be returned as a character vector.
 #' @examples
 #' \dontrun{
-#' db_colnames()
+#' db_colnames("iris")
 #' }
 #' @export
 db_colnames <- function(tablename, conf_file = "~/.db_conf.yml") {

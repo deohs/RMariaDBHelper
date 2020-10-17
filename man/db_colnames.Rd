@@ -26,7 +26,7 @@ names will be returned as a character vector.
 
 \examples{
 \dontrun{
-db_colnames()
+db_colnames("iris")
 }
 }
 \keyword{MariaDB,}
