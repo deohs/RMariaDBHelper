@@ -213,6 +213,31 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
     as.character(db_fetch_query("SHOW TABLES;", conf_file = conf_file)[[1]])
 }
 
+#' Show Column Names for a Table
+#'
+#' Show a list of column (field) names for a table in a database.
+#' @param tablename (character) A table name to query for structure.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (character) A vector of column (field) names.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' The database will be queried for column (field) names for a table. These
+#' names will be returned as a character vector.
+#' @examples
+#' \dontrun{
+#' db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
+#' }
+#' @export
+db_colnames <- function(tablename, conf_file = "~/.db_conf.yml") {
+  channel <- db_connect(conf_file)
+  if (!isFALSE(channel)) {
+    res_db <- RMariaDB::dbListFields(channel, tablename)
+    res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
+    res_db
+  }
+}
+
 #' Show Length and Size of Tables.
 #'
 #' Run a database query that lists the length and size of database tables.

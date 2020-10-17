@@ -63,7 +63,10 @@ db_ls()
 # Show length and size of all tables in a database.
 db_len()
 
-# Show columns of a table.
+# Show column names of a table.
+db_colnames("arrests")
+
+# Show column structure of a table.
 db_str("arrests")
 
 # Show columns of all tables.
