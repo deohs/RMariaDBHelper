@@ -94,15 +94,27 @@ db_ncol("arrests")
 # Show dimensions of a table.
 db_dim("arrests")
 
-# Append to a table.
-db_append_table(df, "arrests")
+# Add an empty column to a table.
+db_add_col("arrests", "StateAbb", "varchar(2)")
+
+# Update all the rows to fill this new column (very slow).
+res <- mapply(function(x, y) {
+    db_run_query(paste0(
+        "UPDATE arrests SET StateAbb = '", x, "' WHERE State = '", y, "';"))
+}, state.abb, state.name)
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests", 6)
+
+# Remove (drop) a column from a table.
+db_drop_col("arrests", "StateAbb")
 
 # Retrieve a table as a dataframe.
 df.from.db <- db_fetch_table("arrests")
 str(df.from.db)
 
-# Retrieve first n rows of a table as a dataframe, like head().
-db_fetch_table("arrests", 6)
+# Append rows to a table from a dataframe.
+db_append_table(df, "arrests")
 
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.

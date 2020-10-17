@@ -294,7 +294,8 @@ db_str <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' @return (character) The Field Type.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' A SHOW COLUMNS query will return the type of a field.
+#' An ALTER TABLE command will return the type of a field in a table in a
+#' database.
 #' @examples
 #' \dontrun{
 #' db_get_type("iris", "Species")
@@ -318,7 +319,8 @@ db_get_type <- function(tablename, fieldname, conf_file = "~/.db_conf.yml") {
 #' @return (integer) The number of rows affected by the field type change.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' A SHOW COLUMNS query will return the type of a field.
+#' An ALTER TABLE command will change the type of a field in a table in a
+#' database.
 #' @examples
 #' \dontrun{
 #' db_set_type("iris", "Species", "varchar(32)")
@@ -330,6 +332,57 @@ db_set_type <- function(tablename, fieldname, fieldtype,
   fieldname <- paste0("`", gsub("[`;]", '', fieldname), "`")
   fieldtype <- gsub("[;]", '', fieldtype)
   query <- paste("ALTER TABLE", tablename, "MODIFY", fieldname, fieldtype)
+  db_run_query(query, conf_file = conf_file)
+}
+
+#' Add a Column (Field).
+#'
+#' Add a column (field) to a database table.
+#' @param tablename (character) A table name in a database.
+#' @param fieldname (character) A field name to add to a database table.
+#' @param fieldtype (character) A field type to set for a field added to a table.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (integer) The number of rows affected by the field addition.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' An ALTER TABLE ... ADD COLUMN command will add a field to a table in a
+#' database.
+#' @examples
+#' \dontrun{
+#' db_add_col("iris", "Species", "varchar(32)")
+#' }
+#' @export
+db_add_col <- function(tablename, fieldname, fieldtype,
+                        conf_file = "~/.db_conf.yml") {
+  tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
+  fieldname <- paste0("`", gsub("[`;]", '', fieldname), "`")
+  fieldtype <- gsub("[;]", '', fieldtype)
+  query <- paste("ALTER TABLE", tablename, "ADD COLUMN", fieldname, fieldtype)
+  db_run_query(query, conf_file = conf_file)
+}
+
+#' Drop (Delete) a Column (Field).
+#'
+#' Remove a column (field) to a database table.
+#' @param tablename (character) A table name in a database.
+#' @param fieldname (character) A field name to remove from a database table.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (integer) The number of rows affected by the field addition.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' An ALTER TABLE ... DROP COLUMN command will remove a field from a table in
+#' a database.
+#' @examples
+#' \dontrun{
+#' db_drop_col("iris", "Species")
+#' }
+#' @export
+db_drop_col <- function(tablename, fieldname, conf_file = "~/.db_conf.yml") {
+  tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
+  fieldname <- paste0("`", gsub("[`;]", '', fieldname), "`")
+  query <- paste("ALTER TABLE", tablename, "DROP COLUMN", fieldname)
   db_run_query(query, conf_file = conf_file)
 }
 
