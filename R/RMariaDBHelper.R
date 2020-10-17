@@ -161,9 +161,9 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE, uniq = TRUE,
                            conf_file = "~/.db_conf.yml") {
     pk_str <- ifelse(pk == TRUE, 'PRIMARY KEY', '')
     uniq_str <- ifelse(uniq == TRUE, 'UNIQUE', '')
-    tablename <- paste0('`', gsub('`', '', tablename), '`')
-    index_name <- paste0('`ndx_', gsub('`', '', fieldname), '`')
-    fieldname <- paste0('`', gsub('`', '', fieldname), '`')
+    tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
+    index_name <- paste0('`ndx_', gsub('[`;]', '', fieldname), '`')
+    fieldname <- paste0('`', gsub('[`;]', '', fieldname), '`')
     query <- paste("ALTER TABLE", tablename,
                    "ADD", fieldname, "INT UNSIGNED NOT NULL AUTO_INCREMENT",
                    pk_str, ", ADD", uniq_str, "INDEX", index_name, "(",
@@ -279,9 +279,58 @@ db_len <- function(conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_str <- function(tablename, conf_file = "~/.db_conf.yml") {
-    tablename <- paste0('`', gsub('`', '', tablename), '`')
+    tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
     query <- paste("SHOW COLUMNS FROM", tablename)
     db_fetch_query(query, conf_file = conf_file)
+}
+
+#' Get the Type of a Field.
+#'
+#' Run a database query on a table that shows the type of a field (column).
+#' @param tablename (character) A table name to query for structure.
+#' @param fieldname (character) A field name to query for Field Type.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (character) The Field Type.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A SHOW COLUMNS query will return the type of a field.
+#' @examples
+#' \dontrun{
+#' db_get_type("iris", "Species")
+#' }
+#' @export
+db_get_type <- function(tablename, fieldname, conf_file = "~/.db_conf.yml") {
+  tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
+  fieldname <- paste0("'", gsub("[';]", '', fieldname), "'")
+  query <- paste("SHOW COLUMNS FROM", tablename, "WHERE Field =", fieldname)
+  as.character(db_fetch_query(query, conf_file = conf_file)['Type'])
+}
+
+#' Set the Type of a Field.
+#'
+#' Set the type of a field (column) in a database table.
+#' @param tablename (character) A table name in a database.
+#' @param fieldname (character) A field name in a database table.
+#' @param fieldtype (character) A field type to set for a field in a table.
+#' @param conf_file (character) A file containing database connection parameters.
+#'     (Default: "~/.db_conf.yml")
+#' @return (integer) The number of rows affected by the field type change.
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A SHOW COLUMNS query will return the type of a field.
+#' @examples
+#' \dontrun{
+#' db_set_type("iris", "Species", "varchar(32)")
+#' }
+#' @export
+db_set_type <- function(tablename, fieldname, fieldtype,
+                        conf_file = "~/.db_conf.yml") {
+  tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
+  fieldname <- paste0("`", gsub("[`;]", '', fieldname), "`")
+  fieldtype <- gsub("[;]", '', fieldtype)
+  query <- paste("ALTER TABLE", tablename, "MODIFY", fieldname, fieldtype)
+  db_run_query(query, conf_file = conf_file)
 }
 
 #' Show structure of all tables.
@@ -433,7 +482,7 @@ db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
-    tablename <- paste0('`', gsub('`', '', tablename), '`')
+    tablename <- paste0('`', gsub('[`;]', '', tablename), '`')
     db_fetch_query(paste('SELECT * FROM', tablename,
                          ifelse(n > 0, paste("LIMIT", as.integer(n)), "")))
 }
