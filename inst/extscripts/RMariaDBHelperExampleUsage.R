@@ -69,6 +69,16 @@ db_colnames("arrests")
 # Show column structure of a table.
 db_str("arrests")
 
+# Q: Why is the Type of State set to varchar(14)?
+max(nchar(df$State))
+db_fetch_query("SELECT MAX(LENGTH(State)) FROM arrests;")
+
+# Increase the maximum allowed width of State field.
+db_run_query("ALTER TABLE arrests MODIFY State VARCHAR(32);")
+
+# Show that column structure has changed.
+db_str("arrests")
+
 # Show columns of all tables.
 db_str_all()
 
