@@ -46,13 +46,13 @@ about the arguments, see the documentation for RMariaDB::dbConnect.
 \examples{
 \dontrun{
 db_write_conf(conf_file = "~/.db_conf.yml",
-             username = "my_username",
-             host = "db.server.example.com",
-             dbname = "my_dbname",
-             sslmode = "REQUIRED",
-             sslca = "/etc/db-ssl/ca-cert.pem",
-             sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem")
+              username = "my_username",
+              host = "db.server.example.com",
+              dbname = "my_dbname",
+              sslmode = "REQUIRED",
+              sslca = "/etc/db-ssl/ca-cert.pem",
+              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
+              sslcert = "/etc/db-ssl/client-cert.pem")
 file.edit("~/.db_conf.yml")
 }
 }

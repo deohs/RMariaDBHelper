@@ -35,13 +35,13 @@ unlink("~/.db_conf.yml")
 # Set up configuration file for first use, creating it if not found.
 # This only needs to be done once.
 db_write_conf(conf_file = "~/.db_conf.yml",
-             username = "my_username",
-             host = "db.server.example.com",
-             dbname = "my_dbname",
-             sslmode = "REQUIRED",
-             sslca = "/etc/db-ssl/ca-cert.pem",
-             sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem")
+              username = "my_username",
+              host = "db.server.example.com",
+              dbname = "my_dbname",
+              sslmode = "REQUIRED",
+              sslca = "/etc/db-ssl/ca-cert.pem",
+              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
+              sslcert = "/etc/db-ssl/client-cert.pem")
 
 # Edit configuration file to make any needed changes.
 file.edit("~/.db_conf.yml")
