@@ -7,7 +7,10 @@
 # Load database helper package.
 library(RMariaDBHelper)
 
-# Set up configuration file for first use, if not already present.
+# Remove old configuration file, if it exists.
+unlink("~/.db_conf.yml")
+
+# Set up configuration file for first use, creating it if not found.
 db_read_conf(conf_file = "~/.db_conf.yml",
              username = "my_username",
              host = "db.server.example.com",
