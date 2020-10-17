@@ -101,7 +101,7 @@ db_add_col("arrests", "StateAbb", "varchar(2)")
 res <- mapply(function(x, y) {
     db_run_query(paste0(
         "UPDATE arrests SET StateAbb = '", x, "' WHERE State = '", y, "';"))
-}, state.abb, state.name)
+}, datasets::state.abb, datasets::state.name)
 
 # Retrieve first n rows of a table as a dataframe, like head().
 db_fetch_table("arrests", 6)
