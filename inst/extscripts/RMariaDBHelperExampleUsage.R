@@ -37,10 +37,6 @@ row.names(df) <- NULL
 # Send a dataframe to the database as a new table.
 db_send_table(df, "arrests")
 
-# Add "id" as auto-incrementing integer primary key and create an index on it.
-# This is not required but will help with some queries (below) and performance.
-db_add_auto_id("arrests")
-
 # Show a list of tables in a database.
 db_ls()
 
@@ -74,6 +70,10 @@ str(df.from.db)
 
 # Retrieve first n rows of a table as a dataframe, as like head().
 db_fetch_table("arrests", 6)
+
+# Add "id" as auto-incrementing integer primary key and create an index on it.
+# This is not required but will help with some queries (below) and performance.
+db_add_auto_id("arrests")
 
 # Retrieve last n rows of a table as a dataframe, as like tail().
 # Assumes "id" is stored in alphanumeric order, such as an auto-number key.
