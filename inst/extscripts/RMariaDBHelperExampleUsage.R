@@ -4,10 +4,19 @@
 
 # This script contains sample commands for testing RMariaDBHelper functions.
 
-# Load database helper package.
+# Optional: Set "enable-cleartext-plugin" option. Some DB servers need this.
+# Note: For this to work, RMariaDBHelper and RMariaDB must not be loaded.
+if ("RMariaDBHelper" %in% (.packages())) detach(package:RMariaDBHelper)
+if ("RMariaDB" %in% (.packages())) detach(package:RMariaDB)
+Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1)
+
+# Load RMariaDBHelper package.
 library(RMariaDBHelper)
 
-# Remove old configuration file, if it exists.
+# Optional: Clear database configuration to force reading configuration file.
+if (exists("db_conf")) rm("db_conf")
+
+# Optional: Remove old configuration file, if it exists, to force creating it.
 unlink("~/.db_conf.yml")
 
 # Set up configuration file for first use, creating it if not found.
@@ -18,8 +27,7 @@ db_read_conf(conf_file = "~/.db_conf.yml",
              sslmode = "REQUIRED",
              sslca = "/etc/db-ssl/ca-cert.pem",
              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem",
-             enable_cleartext_plugin = TRUE)
+             sslcert = "/etc/db-ssl/client-cert.pem")
 
 # Prepare a dataset for sending to the database. Store rownames as a column.
 df <- datasets::USArrests
