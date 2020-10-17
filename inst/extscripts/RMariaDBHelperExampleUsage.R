@@ -19,11 +19,8 @@ Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN = 1)
 #
 # Option 2: Put "enable-cleartext-plugin" in your ~/.my.cnf file.
 # This method may be preferable as it only needs to be run once.
-if (!file.exists("~/.my.cnf")) {
-    con <- file("~/.my.cnf")
-    writeLines(c("[client]", "enable-cleartext-plugin"), con)
-    close(con)
-}
+my_cnf <- c("[client]", "enable-cleartext-plugin")
+if (!file.exists("~/.my.cnf")) write(my_cnf, "~/.my.cnf")
 # ---------------------------------------------------------------------------
 
 # Load RMariaDBHelper package.
@@ -36,7 +33,8 @@ if (exists("db_conf")) rm("db_conf")
 unlink("~/.db_conf.yml")
 
 # Set up configuration file for first use, creating it if not found.
-db_read_conf(conf_file = "~/.db_conf.yml",
+# This only needs to be done once.
+db_write_conf(conf_file = "~/.db_conf.yml",
              username = "my_username",
              host = "db.server.example.com",
              dbname = "my_dbname",
@@ -44,6 +42,12 @@ db_read_conf(conf_file = "~/.db_conf.yml",
              sslca = "/etc/db-ssl/ca-cert.pem",
              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
              sslcert = "/etc/db-ssl/client-cert.pem")
+
+# Edit configuration file to make any needed changes.
+file.edit("~/.db_conf.yml")
+
+# Show a list of tables in a database.
+db_ls()
 
 # Prepare a dataset for sending to the database. Store rownames as a column.
 df <- datasets::USArrests

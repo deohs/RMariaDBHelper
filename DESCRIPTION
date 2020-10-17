@@ -1,6 +1,6 @@
 Package: RMariaDBHelper
 Title: Helper functions to make RMariaDB easier to use
-Version: 0.0.7
+Version: 0.0.8
 Authors@R: 
     person(given = "Brian",
            family = "High",

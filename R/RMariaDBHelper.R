@@ -1,24 +1,23 @@
-#' Read Configuration
+#' Write Configuration
 #'
-#' Read database configuration file.
-#' @param conf_file (character) Configuration file to read/write.
+#' Write database configuration settings to a file.
+#' @param conf_file (character) Configuration file to write.
 #'     (Default: "~/.db_conf.yml")
-#' @param username (character) Username. See: RMariaDB::MariaDB. (Default: "")
-#' @param host (character) Database erver hostname. See: RMariaDB::MariaDB.
+#' @param username (character) Username.  (Default: "")
+#' @param host (character) Database erver hostname.
 #'     (Default: "")
-#' @param dbname (character) Database name. See: RMariaDB::MariaDB. (Default: "")
-#' @param sslmode (character) SSL mode. See: RMariaDB::MariaDB. (Default: "")
-#' @param sslca (character) CCL CA path. See: RMariaDB::MariaDB. (Default: "")
-#' @param sslkey (character) SSL key path. See: RMariaDB::MariaDB. (Default: "")
-#' @param sslcert (character) SSL certificate path. See: RMariaDB::MariaDB.
-#'     (Default: "")
+#' @param dbname (character) Database name. (Default: "")
+#' @param sslmode (character) SSL mode. (Default: "")
+#' @param sslca (character) CCL CA path. (Default: "")
+#' @param sslkey (character) SSL key path. (Default: "")
+#' @param sslcert (character) SSL certificate path. (Default: "")
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
-#' A configuration file will be read if found, otherwise one will be created.
+#' A configuration file will be created with the values provided. For details
+#' about the arguments, see the documentation for RMariaDB::MariaDB().
 #' @examples
 #' \dontrun{
-#' # First, run once to create the file with the values provided:
-#' db_read_conf(conf_file = "~/.db_conf.yml",
+#' db_write_conf(conf_file = "~/.db_conf.yml",
 #'              username = "my_username",
 #'              host = "db.server.example.com",
 #'              dbname = "my_dbname",
@@ -26,13 +25,10 @@
 #'              sslca = "/etc/db-ssl/ca-cert.pem",
 #'              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
 #'              sslcert = "/etc/db-ssl/client-cert.pem")
-#' # You will see warnings about the file not existing and/or needs editing.
-#'
-#' # Subsequently, read the file once per session:
-#' db_conf <- db_read_conf()
+#' file.edit("~/.db_conf.yml")
 #' }
 #' @export
-db_read_conf <- function(conf_file = "~/.db_conf.yml",
+db_write_conf <- function(conf_file = "~/.db_conf.yml",
                          username = '',
                          host = '',
                          dbname = '',
@@ -40,23 +36,41 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
                          sslca = '',
                          sslkey = '',
                          sslcert = '') {
+      db_conf <-
+          list(
+              username = username,
+              host = host,
+              dbname = dbname,
+              sslmode = sslmode,
+              sslca = sslca,
+              sslkey = sslkey,
+              sslcert = sslcert
+          )
+
+      try(yaml::write_yaml(db_conf, file = conf_file))
+      warning(paste("Edit", conf_file, "for correct database settings."))
+}
+
+#' Read Configuration
+#'
+#' Read database configuration file.
+#' @param conf_file (character) Configuration file to read/write.
+#'     (Default: "~/.db_conf.yml")
+#' @keywords database, sql, MariaDB, utility
+#' @section Details:
+#' A configuration file will be read if found, otherwise one will be created.
+#' @examples
+#' \dontrun{
+#' db_read_conf()
+#' }
+#' @export
+db_read_conf <- function(conf_file = "~/.db_conf.yml") {
     if (file.exists(conf_file)) {
         db_conf <<- yaml::read_yaml(file = conf_file)
         return(exists("db_conf") & is.list(db_conf) & length(db_conf) > 0)
     } else {
-        db_conf <<-
-            list(
-                username = username,
-                host = host,
-                dbname = dbname,
-                sslmode = sslmode,
-                sslca = sslca,
-                sslkey = sslkey,
-                sslcert = sslcert
-            )
-
-        try(yaml::write_yaml(db_conf, file = conf_file))
-        warning(paste("Edit", conf_file, "for correct database settings."))
+        warning("Configuration file does not exist. Creating one...")
+        db_write_conf(conf_file = conf_file)
         return(FALSE)
     }
 }

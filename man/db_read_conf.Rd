@@ -4,36 +4,11 @@
 \alias{db_read_conf}
 \title{Read Configuration}
 \usage{
-db_read_conf(
-  conf_file = "~/.db_conf.yml",
-  username = "",
-  host = "",
-  dbname = "",
-  sslmode = "",
-  sslca = "",
-  sslkey = "",
-  sslcert = ""
-)
+db_read_conf(conf_file = "~/.db_conf.yml")
 }
 \arguments{
 \item{conf_file}{(character) Configuration file to read/write.
 (Default: "~/.db_conf.yml")}
-
-\item{username}{(character) Username. See: RMariaDB::MariaDB. (Default: "")}
-
-\item{host}{(character) Database erver hostname. See: RMariaDB::MariaDB.
-(Default: "")}
-
-\item{dbname}{(character) Database name. See: RMariaDB::MariaDB. (Default: "")}
-
-\item{sslmode}{(character) SSL mode. See: RMariaDB::MariaDB. (Default: "")}
-
-\item{sslca}{(character) CCL CA path. See: RMariaDB::MariaDB. (Default: "")}
-
-\item{sslkey}{(character) SSL key path. See: RMariaDB::MariaDB. (Default: "")}
-
-\item{sslcert}{(character) SSL certificate path. See: RMariaDB::MariaDB.
-(Default: "")}
 }
 \description{
 Read database configuration file.
@@ -45,19 +20,7 @@ A configuration file will be read if found, otherwise one will be created.
 
 \examples{
 \dontrun{
-# First, run once to create the file with the values provided:
-db_read_conf(conf_file = "~/.db_conf.yml",
-             username = "my_username",
-             host = "db.server.example.com",
-             dbname = "my_dbname",
-             sslmode = "REQUIRED",
-             sslca = "/etc/db-ssl/ca-cert.pem",
-             sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem")
-# You will see warnings about the file not existing and/or needs editing.
-
-# Subsequently, read the file once per session:
-db_conf <- db_read_conf()
+db_read_conf()
 }
 }
 \keyword{MariaDB,}
