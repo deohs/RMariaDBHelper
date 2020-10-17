@@ -28,4 +28,5 @@ or the online documentation for this package as found in the R help browser.
 ## Notes
 
 - This package is to be used with a MariaDB database configured previously.
+- The package is only supported for use on Linux systems.
 - For a more mature and feature-rich package, see [databaser](https://github.com/skgrange/databaser).
