@@ -55,9 +55,6 @@ db_str("arrests")
 # Show columns of all tables.
 db_str_all()
 
-# Show indexes of a table.
-db_fetch_query("SHOW INDEX FROM arrests;")
-
 # Show number of rows in a table.
 db_nrow("arrests")
 
@@ -80,6 +77,9 @@ db_fetch_table("arrests", 6)
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.
 db_add_auto_id("arrests")
+
+# Show indexes of a table.
+db_fetch_query("SHOW INDEX FROM arrests;")
 
 # Retrieve last n rows of a table as a dataframe, like tail().
 # Assumes "id" is stored in alphanumeric order, such as an auto-number key.
