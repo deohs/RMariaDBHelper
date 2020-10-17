@@ -6,33 +6,33 @@
 \usage{
 db_write_conf(
   conf_file = "~/.db_conf.yml",
-  username = "",
-  host = "",
-  dbname = "",
-  sslmode = "",
-  sslca = "",
-  sslkey = "",
-  sslcert = ""
+  username = NULL,
+  host = NULL,
+  dbname = NULL,
+  sslmode = NULL,
+  sslca = NULL,
+  sslkey = NULL,
+  sslcert = NULL
 )
 }
 \arguments{
 \item{conf_file}{(character) Configuration file to write.
 (Default: "~/.db_conf.yml")}
 
-\item{username}{(character) Username.  (Default: "")}
+\item{username}{(character) Username.  (Default: NULL)}
 
-\item{host}{(character) Database erver hostname.
-(Default: "")}
+\item{host}{(character) Database server hostname.
+(Default: NULL)}
 
-\item{dbname}{(character) Database name. (Default: "")}
+\item{dbname}{(character) Database name. (Default: NULL)}
 
-\item{sslmode}{(character) SSL mode. (Default: "")}
+\item{sslmode}{(character) SSL mode. (Default: NULL)}
 
-\item{sslca}{(character) CCL CA path. (Default: "")}
+\item{sslca}{(character) CCL CA path. (Default: NULL)}
 
-\item{sslkey}{(character) SSL key path. (Default: "")}
+\item{sslkey}{(character) SSL key path. (Default: NULL)}
 
-\item{sslcert}{(character) SSL certificate path. (Default: "")}
+\item{sslcert}{(character) SSL certificate path. (Default: NULL)}
 }
 \description{
 Write database configuration settings to a file.
@@ -40,7 +40,7 @@ Write database configuration settings to a file.
 \section{Details}{
 
 A configuration file will be created with the values provided. For details
-about the arguments, see the documentation for RMariaDB::MariaDB().
+about the arguments, see the documentation for RMariaDB::dbConnect.
 }
 
 \examples{

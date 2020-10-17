@@ -3,18 +3,18 @@
 #' Write database configuration settings to a file.
 #' @param conf_file (character) Configuration file to write.
 #'     (Default: "~/.db_conf.yml")
-#' @param username (character) Username.  (Default: "")
-#' @param host (character) Database erver hostname.
-#'     (Default: "")
-#' @param dbname (character) Database name. (Default: "")
-#' @param sslmode (character) SSL mode. (Default: "")
-#' @param sslca (character) CCL CA path. (Default: "")
-#' @param sslkey (character) SSL key path. (Default: "")
-#' @param sslcert (character) SSL certificate path. (Default: "")
+#' @param username (character) Username.  (Default: NULL)
+#' @param host (character) Database server hostname.
+#'     (Default: NULL)
+#' @param dbname (character) Database name. (Default: NULL)
+#' @param sslmode (character) SSL mode. (Default: NULL)
+#' @param sslca (character) CCL CA path. (Default: NULL)
+#' @param sslkey (character) SSL key path. (Default: NULL)
+#' @param sslcert (character) SSL certificate path. (Default: NULL)
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
 #' A configuration file will be created with the values provided. For details
-#' about the arguments, see the documentation for RMariaDB::MariaDB().
+#' about the arguments, see the documentation for RMariaDB::dbConnect.
 #' @examples
 #' \dontrun{
 #' db_write_conf(conf_file = "~/.db_conf.yml",
@@ -29,13 +29,13 @@
 #' }
 #' @export
 db_write_conf <- function(conf_file = "~/.db_conf.yml",
-                         username = '',
-                         host = '',
-                         dbname = '',
-                         sslmode = '',
-                         sslca = '',
-                         sslkey = '',
-                         sslcert = '') {
+                         username = NULL,
+                         host = NULL,
+                         dbname = NULL,
+                         sslmode = NULL,
+                         sslca = NULL,
+                         sslkey = NULL,
+                         sslcert = NULL) {
       db_conf <-
           list(
               username = username,
