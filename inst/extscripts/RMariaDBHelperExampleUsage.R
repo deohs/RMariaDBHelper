@@ -5,15 +5,25 @@
 # This script contains sample commands for testing RMariaDBHelper functions.
 
 # ---------------------------------------------------------------------------
-# Optional: Set "enable-cleartext-plugin" option. Some DB servers need this.
-# Note: If you enable this, be sure communications with the server are secure.
-# Note: To work, RMariaDBHelper, RMariaDB, and RMySQL must not be loaded.
+# Warning: Clear text password support is needed by some database servers.
+# ---------------------------------------------------------------------------
+# If you enable this, be sure that communications with the server are secure.
+#
+# Option 1: Set an environment variable, LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN.
+# To work, RMariaDBHelper, RMariaDB, and RMySQL must not be loaded.
 unload_pkg <- function(x)
     if (x %in% (.packages()))
         detach(paste0('package:', x), character.only = TRUE, unload = TRUE)
 res <- sapply(c('RMariaDBHelper', 'RMariaDB', 'RMySQL'), unload_pkg)
-Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1)
-# Alternatively, put "enable-cleartext-plugin" in your ~/.my.cnf file.
+Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN = 1)
+#
+# Option 2: Put "enable-cleartext-plugin" in your ~/.my.cnf file.
+# This method may be preferable as it only needs to be run once.
+if (!file.exists("~/.my.cnf")) {
+    con <- file("~/.my.cnf")
+    writeLines(c("[client]", "enable-cleartext-plugin"), con)
+    close(con)
+}
 # ---------------------------------------------------------------------------
 
 # Load RMariaDBHelper package.
