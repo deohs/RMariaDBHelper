@@ -1,6 +1,16 @@
 # RMariaDBHelper
 
-Helper functions to make RMariaDB easier to use
+This package contains helper functions to make RMariaDB easier to use. The 
+intention is to allow you to work with database tables almost as easily as 
+you could work with dataframes. Normally, when using databases in R, you
+have to manage the connection to the database each time you use it. This 
+can become tedious. This package can alleviate much of that drudgery.
+
+With this package, you can...
+
+- interact with database tables without explicitly connecting to the database
+- enter your database password only once when first connecting (implicitly)
+- use functions which are very similar to those you would use with dataframes
 
 ## Installation
 
