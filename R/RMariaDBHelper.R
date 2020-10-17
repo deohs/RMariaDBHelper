@@ -127,7 +127,7 @@ db_connect <- function(conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
-    channel <- db_connect(conf_file)
+    channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbExecute(channel, query)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -187,7 +187,7 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE, uniq = TRUE,
 #' }
 #' @export
 db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
-    channel <- db_connect(conf_file)
+    channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
         res_db <- RMariaDB::dbGetQuery(channel, query)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -216,7 +216,7 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' Show Column Names for a Table
 #'
 #' Show a list of column (field) names for a table in a database.
-#' @param tablename (character) A table name to query for structure.
+#' @param tablename (character) A table name to query for column (field) names.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
 #' @return (character) A vector of column (field) names.
@@ -226,11 +226,11 @@ db_ls <- function(conf_file = "~/.db_conf.yml") {
 #' names will be returned as a character vector.
 #' @examples
 #' \dontrun{
-#' db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
+#' db_colnames()
 #' }
 #' @export
 db_colnames <- function(tablename, conf_file = "~/.db_conf.yml") {
-  channel <- db_connect(conf_file)
+  channel <- db_connect(conf_file = conf_file)
   if (!isFALSE(channel)) {
     res_db <- RMariaDB::dbListFields(channel, tablename)
     res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -382,7 +382,7 @@ db_dim <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
-    channel <- db_connect(conf_file)
+    channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbWriteTable(channel, tablename, df)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
@@ -407,7 +407,7 @@ db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' }
 #' @export
 db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
-    channel <- db_connect(conf_file)
+    channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
         res <- RMariaDB::dbAppendTable(channel, tablename, df)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))

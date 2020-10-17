@@ -7,7 +7,7 @@
 db_colnames(tablename, conf_file = "~/.db_conf.yml")
 }
 \arguments{
-\item{tablename}{(character) A table name to query for structure.}
+\item{tablename}{(character) A table name to query for column (field) names.}
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
@@ -26,7 +26,7 @@ names will be returned as a character vector.
 
 \examples{
 \dontrun{
-db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
+db_colnames()
 }
 }
 \keyword{MariaDB,}
