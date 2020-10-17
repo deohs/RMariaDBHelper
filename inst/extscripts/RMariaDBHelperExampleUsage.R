@@ -15,7 +15,8 @@ db_read_conf(conf_file = "~/.db_conf.yml",
              sslmode = "REQUIRED",
              sslca = "/etc/db-ssl/ca-cert.pem",
              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem")
+             sslcert = "/etc/db-ssl/client-cert.pem",
+             enable_cleartext_plugin = TRUE)
 
 # Prepare a dataset for sending to the database. Store rownames as a column.
 df <- datasets::USArrests

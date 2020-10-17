@@ -12,7 +12,8 @@
 #' @param sslkey (character) SSL key path. See: RMariaDB::MariaDB. (Default: "")
 #' @param sslcert (character) SSL certificate path. See: RMariaDB::MariaDB.
 #'     (Default: "")
-#' @return (boolean) TRUE for success; FALSE for failure.
+#' @param enable_cleartext_plugin (boolean) Set the environment variable.
+#' LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1. (Default: TRUE)#' @return (boolean) TRUE for success; FALSE for failure.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
 #' A configuration file will be read if found, otherwise one will be created.
@@ -26,7 +27,8 @@
 #'              sslmode = "REQUIRED",
 #'              sslca = "/etc/db-ssl/ca-cert.pem",
 #'              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-#'              sslcert = "/etc/db-ssl/client-cert.pem")
+#'              sslcert = "/etc/db-ssl/client-cert.pem",
+#'              enable_cleartext_plugin = TRUE)
 #' # You will see warnings about the file not existing and/or needs editing.
 #'
 #' # Subsequently, read the file once per session:
@@ -40,7 +42,8 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
                          sslmode = '',
                          sslca = '',
                          sslkey = '',
-                         sslcert = '') {
+                         sslcert = '',
+                         enable_cleartext_plugin = TRUE) {
     if (file.exists(conf_file)) {
         db_conf <<- yaml::read_yaml(file = conf_file)
         return(exists("db_conf") & is.list(db_conf) & length(db_conf) > 0)
@@ -55,6 +58,13 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
                 sslkey = sslkey,
                 sslcert = sslcert
             )
+
+        if (enable_cleartext_plugin == TRUE) {
+            if (Sys.getenv('LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN') != "1") {
+                db_conf$LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN <- 1L
+            }
+        }
+
         try(yaml::write_yaml(db_conf, file = conf_file))
         warning(paste("Edit", conf_file, "for correct database settings."))
         return(FALSE)
@@ -66,8 +76,6 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
 #' Initialize a connection to the database and return a DBIConnection.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
-#' @param enable_cleartext_plugin (boolean) Set the environment variable
-#' LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1. (Default: TRUE)
 #' @return (DBIConnection) A DBIConnection for success; FALSE for failure.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -77,20 +85,13 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml",
 #' channel <- db_connect()
 #' }
 #' @export
-db_connect <- function(conf_file = "~/.db_conf.yml",
-                       enable_cleartext_plugin = TRUE) {
+db_connect <- function(conf_file = "~/.db_conf.yml") {
     if (!exists("db_conf")) db_read_conf(conf_file)
 
     if(exists("db_conf")) {
         if (!"password" %in% names(db_conf)) {
             db_conf[['password']] <- getPass::getPass()
             db_conf <<- db_conf
-        }
-
-        if (enable_cleartext_plugin == TRUE) {
-            if (Sys.getenv('LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN') != "1") {
-              Sys.setenv(LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1)
-            }
         }
 
         if (db_conf[['username']] != '' & db_conf[['password']] != '') {

@@ -12,7 +12,8 @@ db_read_conf(
   sslmode = "",
   sslca = "",
   sslkey = "",
-  sslcert = ""
+  sslcert = "",
+  enable_cleartext_plugin = TRUE
 )
 }
 \arguments{
@@ -34,9 +35,9 @@ db_read_conf(
 
 \item{sslcert}{(character) SSL certificate path. See: RMariaDB::MariaDB.
 (Default: "")}
-}
-\value{
-(boolean) TRUE for success; FALSE for failure.
+
+\item{enable_cleartext_plugin}{(boolean) Set the environment variable.
+LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN=1. (Default: TRUE)#' @return (boolean) TRUE for success; FALSE for failure.}
 }
 \description{
 Read database configuration file.
@@ -56,7 +57,8 @@ db_read_conf(conf_file = "~/.db_conf.yml",
              sslmode = "REQUIRED",
              sslca = "/etc/db-ssl/ca-cert.pem",
              sslkey = "/etc/db-ssl/client-key-pkcs1.pem",
-             sslcert = "/etc/db-ssl/client-cert.pem")
+             sslcert = "/etc/db-ssl/client-cert.pem",
+             enable_cleartext_plugin = TRUE)
 # You will see warnings about the file not existing and/or needs editing.
 
 # Subsequently, read the file once per session:
