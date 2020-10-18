@@ -184,7 +184,7 @@ db_fetch_table("arrests", 6)
 # Remove (drop) a column from a table.
 db_drop_col("arrests", "StateAbb")
 
-# Method #3: Create a new table from a SQL JOIN. (Faster.)
+# Method #3: Create a new table from a SQL JOIN. (Fastest for big tables.)
 system.time({
     db_send_table(state_df, "states", overwrite = TRUE)
     db_rm("arrests2", fail_if_missing = FALSE)
@@ -197,7 +197,7 @@ system.time({
 # Retrieve first n rows of a table as a dataframe, like head().
 db_fetch_table("arrests2", 6)
 
-# Method #4: Replace a table with a dataframe made with merge(). (Fastest.)
+# Method #4: Replace a table with a merged dataframe. (Fastest for small tables.)
 system.time({
     db_send_table(
             merge(db_fetch_table("arrests"), state_df, by = "State"),
