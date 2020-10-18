@@ -111,7 +111,7 @@ db_fetch_query("SHOW INDEX FROM arrests;")
 # Head and tail
 # --------------
 
-# Head is easy, but tail needs that auto-number "id"  field we just created.
+# Head is easy, but tail needs that auto-number "id" field we just created.
 
 # Retrieve first n rows of a table as a dataframe, like head().
 db_fetch_table("arrests", 6)
@@ -187,8 +187,9 @@ db_drop_col("arrests", "StateAbb")
 # Method #3: Create a new table from a SQL JOIN. (Faster.)
 system.time({
     db_send_table(state_df, "states", overwrite = TRUE)
+    db_rm("arrests2", fail_if_missing = FALSE)
     db_run_query(
-        "CREATE TABLE arrests2 AS
+         "CREATE TABLE arrests2 AS
          SELECT a.Murder, a.Assault, a.UrbanPop, a.Rape, a.State, s.StateAbb
          FROM arrests a INNER JOIN states s ON a.State = s.State;")
 })
@@ -199,7 +200,8 @@ db_fetch_table("arrests2", 6)
 # Method #4: Replace a table with a dataframe made with merge(). (Fastest.)
 system.time({
     db_send_table(
-        merge(df, state_df, by = "State"), "arrests", overwrite = TRUE)
+            merge(db_fetch_table("arrests"), state_df, by = "State"),
+        "arrests", overwrite = TRUE)
 })
 
 # Retrieve first n rows of a table as a dataframe, like head().
