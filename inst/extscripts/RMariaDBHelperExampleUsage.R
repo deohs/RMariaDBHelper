@@ -140,6 +140,17 @@ db_set_type("arrests", "State", "varchar(32)")
 # Show that column structure has changed.
 db_str("arrests")
 
+# Now, we can add a row for "Washington, District of Columbia" (32 characters).
+db_append_table(
+    data.frame(Murder = 35.9, Assault = 481.4, UrbanPop = 100, Rape = 79.9,
+               State = "Washington, District of Columbia",
+               stringsAsFactors = FALSE),
+    "arrests")
+
+# Show rows filtered by a column value, like subset().
+db_fetch_query("SELECT * FROM arrests
+               WHERE State = 'Washington, District of Columbia';")
+
 # -------------------------------------
 # Changing column values: 4 variations
 # -------------------------------------
