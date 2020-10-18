@@ -202,4 +202,4 @@ db_nrow("arrests")
 res <- sapply(c('arrests', 'arrests2', 'states'), db_rm, fail_if_missing = FALSE)
 
 # Clear the database configuration from memory when finished, for security.
-rm(list = "db_conf")
+rm(db_conf)
