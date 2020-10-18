@@ -146,8 +146,8 @@ system.time({
     db_send_table(state_df, "states", overwrite = TRUE)
     db_send_table(
         db_fetch_query(
-            "SELECT a.Murder, a.Assault, a.UrbanPop, a.Rape, a.State, s.StateAbb
-         FROM arrests a INNER JOIN states s ON a.State = s.State;"),
+        "SELECT a.Murder, a.Assault, a.UrbanPop, a.Rape, a.State, s.StateAbb
+        FROM arrests a INNER JOIN states s ON a.State = s.State;"),
         "arrests", overwrite = TRUE)
 })
 
