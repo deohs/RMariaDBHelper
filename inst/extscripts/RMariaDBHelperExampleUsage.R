@@ -85,9 +85,6 @@ db_dim("arrests")
 df.from.db <- db_fetch_table("arrests")
 str(df.from.db)
 
-# Append rows to a table from a dataframe.
-db_append_table(df, "arrests")
-
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.
 db_add_auto_id("arrests")
@@ -181,6 +178,21 @@ system.time({
 
 # Retrieve first n rows of a table as a dataframe, like head().
 db_fetch_table("arrests", 6)
+
+# Remove (drop) a column from a table.
+db_drop_col("arrests", "StateAbb")
+
+# ---------------------------------------------------------------------------
+# Appending rows: This is easier and faster than adding and filling columns.
+# ---------------------------------------------------------------------------
+
+# Append rows to a table from a dataframe. Here we append another copy of df.
+system.time({
+    db_append_table(df, "arrests")
+})
+
+# Show number of rows in a table.
+db_nrow("arrests")
 
 # ---------------------------------------------------------------------------
 # Cleanup
