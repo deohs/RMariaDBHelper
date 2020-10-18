@@ -4,13 +4,15 @@
 \alias{db_run_query}
 \title{Run a Query}
 \usage{
-db_run_query(query, conf_file = "~/.db_conf.yml")
+db_run_query(query, conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{query}{(character) A SQL statement as a text string.}
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::dbExecute().}
 }
 \value{
 (integer) The number of affected rows.

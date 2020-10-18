@@ -4,7 +4,7 @@
 \alias{db_append_table}
 \title{Append a Dataframe to a Table}
 \usage{
-db_append_table(df, tablename, conf_file = "~/.db_conf.yml")
+db_append_table(df, tablename, conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{df}{(dataframe) A dataframe to append to a database table.}
@@ -13,6 +13,8 @@ db_append_table(df, tablename, conf_file = "~/.db_conf.yml")
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::dbAppendTable().}
 }
 \value{
 (integer) Number of affected (appended) rows.

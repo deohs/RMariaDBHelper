@@ -4,13 +4,15 @@
 \alias{db_rm}
 \title{Remove a Table}
 \usage{
-db_rm(tablename, conf_file = "~/.db_conf.yml")
+db_rm(tablename, conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{tablename}{(character) A table name to remove from the database.}
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::RemoveTable().}
 }
 \value{
 (boolean) Success: TRUE; failure: FALSE.

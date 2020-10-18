@@ -80,6 +80,7 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml") {
 #' Initialize a connection to the database and return a DBIConnection.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::MariaDB().
 #' @return (DBIConnection) A DBIConnection for success; FALSE for failure.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -89,7 +90,7 @@ db_read_conf <- function(conf_file = "~/.db_conf.yml") {
 #' channel <- db_connect()
 #' }
 #' @export
-db_connect <- function(conf_file = "~/.db_conf.yml") {
+db_connect <- function(conf_file = "~/.db_conf.yml", ...) {
     if (!exists("db_conf")) db_read_conf(conf_file)
 
     if(exists("db_conf")) {
@@ -103,7 +104,7 @@ db_connect <- function(conf_file = "~/.db_conf.yml") {
                 db_conf <- c(drv = RMariaDB::MariaDB(), db_conf)
             }
 
-            do.call(RMariaDB::dbConnect, c(db_conf))
+            do.call(RMariaDB::dbConnect, c(db_conf, ...))
         }
     } else {
         warning(paste("Can't read", conf_file))
@@ -117,6 +118,7 @@ db_connect <- function(conf_file = "~/.db_conf.yml") {
 #' @param query (character) A SQL statement as a text string.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::dbExecute().
 #' @return (integer) The number of affected rows.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -126,10 +128,10 @@ db_connect <- function(conf_file = "~/.db_conf.yml") {
 #' db_run_query("DELETE FROM my.tablename WHERE id = 1;")
 #' }
 #' @export
-db_run_query <- function(query, conf_file = "~/.db_conf.yml") {
+db_run_query <- function(query, conf_file = "~/.db_conf.yml", ...) {
     channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
-        res <- RMariaDB::dbExecute(channel, query)
+        res <- RMariaDB::dbExecute(channel, query, ...)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
         res
     }
@@ -177,6 +179,7 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE, uniq = TRUE,
 #' @param query (character) A SQL statement as a text string.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::dbGetQuery().
 #' @return (dataframe) The query result returned as a dataframe.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -186,10 +189,10 @@ db_add_auto_id <- function(tablename, fieldname = "id", pk = TRUE, uniq = TRUE,
 #' db_fetch_query("SELECT * FROM my.tablename LIMIT 10;")
 #' }
 #' @export
-db_fetch_query <- function(query, conf_file = "~/.db_conf.yml") {
+db_fetch_query <- function(query, conf_file = "~/.db_conf.yml", ...) {
     channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
-        res_db <- RMariaDB::dbGetQuery(channel, query)
+        res_db <- RMariaDB::dbGetQuery(channel, query, ...)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
         res_db
     }
@@ -474,6 +477,7 @@ db_dim <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' @param tablename (character) A table name to use for the new table.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::dbWriteTable().
 #' @return (boolean) Success: TRUE; failure: FALSE.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -483,10 +487,10 @@ db_dim <- function(tablename, conf_file = "~/.db_conf.yml") {
 #' db_send_table(datasets::iris, "iris")
 #' }
 #' @export
-db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
+db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml", ...) {
     channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
-        res <- RMariaDB::dbWriteTable(channel, tablename, df)
+        res <- RMariaDB::dbWriteTable(channel, tablename, df, ...)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
         res
     }
@@ -499,6 +503,7 @@ db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' @param tablename (character) A table name to receive additional records.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::dbAppendTable().
 #' @return (integer) Number of affected (appended) rows.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -508,10 +513,10 @@ db_send_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
 #' db_append_table(datasets::iris, "iris")
 #' }
 #' @export
-db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml") {
+db_append_table <- function(df, tablename, conf_file = "~/.db_conf.yml", ...) {
     channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
-        res <- RMariaDB::dbAppendTable(channel, tablename, df)
+        res <- RMariaDB::dbAppendTable(channel, tablename, df, ...)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
         res
     }
@@ -546,6 +551,7 @@ db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
 #' @param tablename (character) A table name to remove from the database.
 #' @param conf_file (character) A file containing database connection parameters.
 #'     (Default: "~/.db_conf.yml")
+#' @param ... Additional arguments passed to RMariaDB::RemoveTable().
 #' @return (boolean) Success: TRUE; failure: FALSE.
 #' @keywords database, sql, MariaDB, utility
 #' @section Details:
@@ -555,10 +561,10 @@ db_fetch_table <- function(tablename, n = -1, conf_file = "~/.db_conf.yml") {
 #' db_rm("iris")
 #' }
 #' @export
-db_rm <- function(tablename, conf_file = "~/.db_conf.yml") {
+db_rm <- function(tablename, conf_file = "~/.db_conf.yml", ...) {
     channel <- db_connect(conf_file = conf_file)
     if (!isFALSE(channel)) {
-        res <- RMariaDB::dbRemoveTable(channel, tablename)
+        res <- RMariaDB::dbRemoveTable(channel, tablename, ...)
         res_discon <- suppressWarnings(RMariaDB::dbDisconnect(channel))
         res
     }

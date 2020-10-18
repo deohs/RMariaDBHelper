@@ -4,11 +4,13 @@
 \alias{db_connect}
 \title{Initialize Connection}
 \usage{
-db_connect(conf_file = "~/.db_conf.yml")
+db_connect(conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::MariaDB().}
 }
 \value{
 (DBIConnection) A DBIConnection for success; FALSE for failure.

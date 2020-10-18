@@ -69,19 +69,6 @@ db_colnames("arrests")
 # Show column structure of a table.
 db_str("arrests")
 
-# Get Type of State field, like typeof().
-db_get_type("arrests", "State")
-
-# Q: Why is the Type of State set to varchar(14)?
-max(nchar(df$State))
-db_fetch_query("SELECT MAX(LENGTH(State)) FROM arrests;")
-
-# Increase the maximum allowed width of State field.
-db_set_type("arrests", "State", "varchar(32)")
-
-# Show that column structure has changed.
-db_str("arrests")
-
 # Show columns of all tables.
 db_str_all()
 
@@ -93,21 +80,6 @@ db_ncol("arrests")
 
 # Show dimensions of a table.
 db_dim("arrests")
-
-# Add an empty column to a table.
-db_add_col("arrests", "StateAbb", "varchar(2)")
-
-# Update all the rows to fill this new column (very slow).
-res <- mapply(function(x, y) {
-    db_run_query(paste0(
-        "UPDATE arrests SET StateAbb = '", x, "' WHERE State = '", y, "';"))
-}, datasets::state.abb, datasets::state.name)
-
-# Retrieve first n rows of a table as a dataframe, like head().
-db_fetch_table("arrests", 6)
-
-# Remove (drop) a column from a table.
-db_drop_col("arrests", "StateAbb")
 
 # Retrieve a table as a dataframe.
 df.from.db <- db_fetch_table("arrests")
@@ -127,8 +99,95 @@ db_fetch_query("SHOW INDEX FROM arrests;")
 # Assumes "id" is stored in alphanumeric order, such as an auto-number key.
 db_fetch_query("SELECT * FROM arrests ORDER BY id DESC LIMIT 6;")
 
-# Remove a table.
-db_rm("arrests")
+# ---------------------------------------------------------------------------
+# Advanced examples
+# ---------------------------------------------------------------------------
+
+# ---------------------
+# Changing column type
+# ---------------------
+
+# Get Type of State field, like typeof().
+db_get_type("arrests", "State")
+
+# Q: Why is the Type of State set to varchar(14)?
+max(nchar(df$State))
+db_fetch_query("SELECT MAX(LENGTH(State)) FROM arrests;")
+
+# Increase the maximum allowed width of State field.
+db_set_type("arrests", "State", "varchar(32)")
+
+# Show that column structure has changed.
+db_str("arrests")
+
+# -------------------------------------
+# Changing column values: 4 variations
+# -------------------------------------
+
+# For the next examples, create a dataframe of state abbreviations and names.
+state_df <- data.frame(StateAbb = datasets::state.abb,
+                       State = datasets::state.name,
+                       stringsAsFactors = FALSE)
+
+# Method #1: Add a new column to a table and fill that column with data. (Slow.)
+system.time({
+    db_add_col("arrests", "StateAbb", "varchar(2)")
+    res <- mapply(function(x, y) {
+        db_run_query(paste0(
+            "UPDATE arrests SET StateAbb = '", x, "' WHERE State = '", y, "';"))
+    }, state_df$StateAbb, state_df$State)
+})
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests", 6)
+
+# Remove (drop) a column from a table.
+db_drop_col("arrests", "StateAbb")
+
+# Method #2: Overwrite the table with a new one made from a SQL JOIN. (Fast.)
+system.time({
+    db_send_table(state_df, "states", overwrite = TRUE)
+    db_send_table(
+        db_fetch_query(
+            "SELECT a.Murder, a.Assault, a.UrbanPop, a.Rape, a.State, s.StateAbb
+         FROM arrests a INNER JOIN states s ON a.State = s.State;"),
+        "arrests", overwrite = TRUE)
+})
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests", 6)
+
+# Remove (drop) a column from a table.
+db_drop_col("arrests", "StateAbb")
+
+# Method #3: Create a new table from a SQL JOIN. (Faster.)
+system.time({
+    db_send_table(state_df, "states", overwrite = TRUE)
+    db_run_query(
+        "CREATE TABLE arrests2 AS
+         SELECT a.Murder, a.Assault, a.UrbanPop, a.Rape, a.State, s.StateAbb
+         FROM arrests a INNER JOIN states s ON a.State = s.State;")
+})
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests2", 6)
+
+# Method #4: Replace a table with a dataframe made with merge(). (Fastest.)
+system.time({
+    db_rm("arrests")
+    df.merged <- merge(df, state_df, by = "State")
+    db_send_table(df.merged, "arrests")
+})
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests", 6)
+
+# ---------------------------------------------------------------------------
+# Cleanup
+# ---------------------------------------------------------------------------
+
+# Remove extra tables.
+res <- sapply(c('arrests', 'arrests2', 'states'), db_rm, fail_if_missing = FALSE)
 
 # Clear the database configuration from memory when finished, for security.
 rm(list = "db_conf")

@@ -4,13 +4,15 @@
 \alias{db_fetch_query}
 \title{Fetch Results from a Query}
 \usage{
-db_fetch_query(query, conf_file = "~/.db_conf.yml")
+db_fetch_query(query, conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{query}{(character) A SQL statement as a text string.}
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::dbGetQuery().}
 }
 \value{
 (dataframe) The query result returned as a dataframe.

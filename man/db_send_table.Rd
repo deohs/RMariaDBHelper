@@ -4,7 +4,7 @@
 \alias{db_send_table}
 \title{Save a Dataframe as a Table}
 \usage{
-db_send_table(df, tablename, conf_file = "~/.db_conf.yml")
+db_send_table(df, tablename, conf_file = "~/.db_conf.yml", ...)
 }
 \arguments{
 \item{df}{(dataframe) A dataframe to send to the database.}
@@ -13,6 +13,8 @@ db_send_table(df, tablename, conf_file = "~/.db_conf.yml")
 
 \item{conf_file}{(character) A file containing database connection parameters.
 (Default: "~/.db_conf.yml")}
+
+\item{...}{Additional arguments passed to RMariaDB::dbWriteTable().}
 }
 \value{
 (boolean) Success: TRUE; failure: FALSE.
