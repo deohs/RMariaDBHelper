@@ -54,8 +54,8 @@ df <- datasets::USArrests
 df$State <- as.character(row.names(df))
 row.names(df) <- NULL
 
-# Send a dataframe to the database as a new table.
-db_send_table(df, "arrests")
+# Send a dataframe to the database.
+db_send_table(df, "arrests", overwrite = TRUE)
 
 # Show a list of tables in a database.
 db_ls()
@@ -85,24 +85,47 @@ db_dim("arrests")
 df.from.db <- db_fetch_table("arrests")
 str(df.from.db)
 
+# ---------------------------------------------------------------------------
+# Advanced examples
+# ---------------------------------------------------------------------------
+
+# ---------------------------
+# Adding a primary key field
+# ---------------------------
+
+# "arrests" already has a column with unique values: State. But if we
+# appended more records (rows) we could end up duplicating state names.
+# Adding an auto-number primary key field will ensure key uniqueness.
+
 # Add "id" as auto-incrementing integer primary key and create an index on it.
 # This is not required but will help with some queries (below) and performance.
 db_add_auto_id("arrests")
 
+# Show column structure of a table.
+db_str("arrests")
+
 # Show indexes of a table.
 db_fetch_query("SHOW INDEX FROM arrests;")
+
+# --------------
+# Head and tail
+# --------------
+
+# Head is easy, but tail needs that auto-number "id"  field we just created.
+
+# Retrieve first n rows of a table as a dataframe, like head().
+db_fetch_table("arrests", 6)
 
 # Retrieve last n rows of a table as a dataframe, like tail().
 # Assumes "id" is stored in alphanumeric order, such as an auto-number key.
 db_fetch_query("SELECT * FROM arrests ORDER BY id DESC LIMIT 6;")
 
-# ---------------------------------------------------------------------------
-# Advanced examples
-# ---------------------------------------------------------------------------
-
 # ---------------------
 # Changing column type
 # ---------------------
+
+# Creating tables upon import has risks, just like when you import CSVs. The
+# column types may not be exactly what you want. Here we do some fine tuning.
 
 # Get Type of State field, like typeof().
 db_get_type("arrests", "State")
@@ -121,12 +144,16 @@ db_str("arrests")
 # Changing column values: 4 variations
 # -------------------------------------
 
+# In R it is easy to add a new column with assignment, cbind(), or merging.
+# But as SQL databases are meant to be updated by row, not by column, we find
+# this to be a tricky task with MariaDB.
+
 # For the next examples, create a dataframe of state abbreviations and names.
 state_df <- data.frame(StateAbb = datasets::state.abb,
                        State = datasets::state.name,
                        stringsAsFactors = FALSE)
 
-# Method #1: Add a new column to a table and fill that column with data. (Slow.)
+# Method #1: Add a new column and fill it with data, row by row. (Slow.)
 system.time({
     db_add_col("arrests", "StateAbb", "varchar(2)")
     res <- mapply(function(x, y) {
@@ -171,9 +198,8 @@ db_fetch_table("arrests2", 6)
 
 # Method #4: Replace a table with a dataframe made with merge(). (Fastest.)
 system.time({
-    db_rm("arrests")
-    df.merged <- merge(df, state_df, by = "State")
-    db_send_table(df.merged, "arrests")
+    db_send_table(
+        merge(df, state_df, by = "State"), "arrests", overwrite = TRUE)
 })
 
 # Retrieve first n rows of a table as a dataframe, like head().
